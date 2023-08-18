@@ -284,7 +284,7 @@ class FunctionField:
         return self.func + '(' + str(self.base) + ')'
 
     def str_extract(self):
-        return self.func + '(ctx, ' + self.base.str_extract() + ')'
+        return self.func + '(' + self.base.str_extract() + ')'
 
     def __eq__(self, other):
         return self.func == other.func and self.base == other.base
@@ -368,7 +368,7 @@ class Format(General):
         return decode_function + '_extract_' + self.name
 
     def output_extract(self):
-        output('static void ', self.extract_name(), '(DisasContext *ctx, ',
+        output('static void ', self.extract_name(), '(',
                self.base.struct_name(), ' *a, ', insntype, ' insn)\n{\n')
         for n, f in self.fields.items():
             output('    a->', n, ' = ', f.str_extract(), ';\n')
@@ -385,7 +385,7 @@ class Pattern(General):
         output('typedef ', self.base.base.struct_name(),
                ' arg_', self.name, ';\n')
         output(translate_scope, 'bool ', translate_prefix, '_', self.name,
-               '(DisasContext *ctx, arg_', self.name, ' *a);\n')
+               '(arg_', self.name, ' *a);\n')
 
     def output_code(self, i, extracted, outerbits, outermask):
         global translate_prefix
@@ -394,11 +394,12 @@ class Pattern(General):
         output(ind, '/* ', self.file, ':', str(self.lineno), ' */\n')
         if not extracted:
             output(ind, self.base.extract_name(),
-                   '(ctx, &u.f_', arg, ', insn);\n')
+                   '( &u.f_', arg, ', insn);\n')
         for n, f in self.fields.items():
             output(ind, 'u.f_', arg, '.', n, ' = ', f.str_extract(), ';\n')
-        output(ind, 'if (', translate_prefix, '_', self.name,
-               '(ctx, &u.f_', arg, ')) return true;\n')
+        # output(ind, 'if (', translate_prefix, '_', self.name,
+        #        '( &u.f_', arg, ')) return true;\n')
+        output()
 
     # Normal patterns do not have children.
     def build_tree(self):
@@ -539,7 +540,7 @@ class Tree:
         # extract the fields now.
         if not extracted and self.base:
             output(ind, self.base.extract_name(),
-                   '(ctx, &u.f_', self.base.base.name, ', insn);\n')
+                   '( &u.f_', self.base.base.name, ', insn);\n')
             extracted = True
 
         # Attempt to aid the compiler in producing compact switch statements.
@@ -1143,7 +1144,7 @@ class SizeTree:
         # If we need to load more bytes to test, do so now.
         if extracted < self.width:
             output(ind, f'insn = {decode_function}_load_bytes',
-                   f'(ctx, insn, {extracted // 8}, {self.width // 8});\n')
+                   f'( insn, {extracted // 8}, {self.width // 8});\n')
             extracted = self.width
 
         # Attempt to aid the compiler in producing compact switch statements.
@@ -1195,7 +1196,7 @@ class SizeLeaf:
         # If we need to load more bytes, do so now.
         if extracted < self.width:
             output(ind, f'insn = {decode_function}_load_bytes',
-                   f'(ctx, insn, {extracted // 8}, {self.width // 8});\n')
+                   f'( insn, {extracted // 8}, {self.width // 8});\n')
             extracted = self.width
         output(ind, 'return insn;\n')
 # end SizeLeaf
@@ -1396,7 +1397,7 @@ def main():
         f.output_extract()
 
     output(decode_scope, 'bool ', decode_function,
-           '(DisasContext *ctx, ', insntype, ' insn)\n{\n')
+           '(', insntype, ' insn)\n{\n')
 
     i4 = str_indent(4)
 
@@ -1413,7 +1414,7 @@ def main():
 
     if variablewidth:
         output('\n', decode_scope, insntype, ' ', decode_function,
-               '_load(DisasContext *ctx)\n{\n',
+               '_load()\n{\n',
                '    ', insntype, ' insn = 0;\n\n')
         stree.output_code(4, 0, 0, 0)
         output('}\n')
