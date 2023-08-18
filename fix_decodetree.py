@@ -332,7 +332,6 @@ class Arguments:
     def output_def(self):
         if not self.extern:
             output('typedef struct {\n')
-            output(f'    char opcode[32];\n')
             for (n, t) in zip(self.fields, self.types):
                 output(f'    {t} {n};\n')
             output('} ', self.struct_name(), ';\n\n')
@@ -341,7 +340,7 @@ class Arguments:
 
 class General:
     """Common code between instruction formats and instruction patterns"""
-    def __init__(self, name, lineno, base, fixb, fixm, udfm, fldm, flds, w, opcode):
+    def __init__(self, name, lineno, base, fixb, fixm, udfm, fldm, flds, w):
         self.name = name
         self.file = input_file
         self.lineno = lineno
@@ -352,7 +351,6 @@ class General:
         self.fieldmask = fldm
         self.fields = flds
         self.width = w
-        self.opcode = opcode
 
     def __str__(self):
         return self.name + ' ' + str_match_bits(self.fixedbits, self.fixedmask)
@@ -372,7 +370,7 @@ class Format(General):
     def output_extract(self):
         output('static void ', self.extract_name(), '(',
                self.base.struct_name(), ' *a, ', insntype, ' insn)\n{\n')
-        output('    strcpy(a->opcode, "', self.opcode, '");\n')
+        # output('    a->opcode = ', '111', ';\n')
         for n, f in self.fields.items():
             output('    a->', n, ' = ', f.str_extract(), ';\n')
         output('}\n\n')
@@ -402,7 +400,7 @@ class Pattern(General):
             output(ind, 'u.f_', arg, '.', n, ' = ', f.str_extract(), ';\n')
         # output(ind, 'if (', translate_prefix, '_', self.name,
         #        '( &u.f_', arg, ')) return true;\n')
-        output(ind, 'printf("%s", &u.f_', arg, '.opcode);\n')
+        output()
 
     # Normal patterns do not have children.
     def build_tree(self):
@@ -784,7 +782,7 @@ def infer_argument_set(flds):
     return arg
 
 
-def infer_format(arg, fieldmask, flds, width, name):
+def infer_format(arg, fieldmask, flds, width):
     global arguments
     global formats
     global decode_function
@@ -813,8 +811,7 @@ def infer_format(arg, fieldmask, flds, width, name):
     if not arg:
         arg = infer_argument_set(flds)
 
-
-    fmt = Format(name, 0, arg, 0, 0, 0, fieldmask, var_flds, width, name)
+    fmt = Format(name, 0, arg, 0, 0, 0, fieldmask, var_flds, width)
     formats[name] = fmt
 
     return (fmt, const_flds)
@@ -956,7 +953,7 @@ def parse_generic(lineno, parent_pat, name, toks):
         if name in formats:
             error(lineno, 'duplicate format name', name)
         fmt = Format(name, lineno, arg, fixedbits, fixedmask,
-                     undefmask, fieldmask, flds, width, name)
+                     undefmask, fieldmask, flds, width)
         formats[name] = fmt
     else:
         # Patterns can reference a format ...
@@ -973,7 +970,7 @@ def parse_generic(lineno, parent_pat, name, toks):
             fixedmask |= fmt.fixedmask
             undefmask |= fmt.undefmask
         else:
-            (fmt, flds) = infer_format(arg, fieldmask, flds, width, name)
+            (fmt, flds) = infer_format(arg, fieldmask, flds, width)
         arg = fmt.base
         for f in flds.keys():
             if f not in arg.fields:
@@ -984,7 +981,7 @@ def parse_generic(lineno, parent_pat, name, toks):
             if f not in flds.keys() and f not in fmt.fields.keys():
                 error(lineno, f'field {f} not initialized')
         pat = Pattern(name, lineno, fmt, fixedbits, fixedmask,
-                      undefmask, fieldmask, flds, width, name)
+                      undefmask, fieldmask, flds, width)
         parent_pat.pats.append(pat)
         allpatterns.append(pat)
 
@@ -1111,7 +1108,6 @@ def parse_file(f, parent_pat):
         elif re.fullmatch(re_fmt_ident, name):
             parse_generic(start_lineno, None, name[1:], toks)
         elif re.fullmatch(re_pat_ident, name):
-            # print(toks)
             parse_generic(start_lineno, parent_pat, name, toks)
         else:
             error(lineno, f'invalid token "{name}"')
