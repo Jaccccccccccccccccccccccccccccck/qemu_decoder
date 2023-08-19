@@ -1,2 +1,2 @@
-gcc test_a32.c -o main
+gcc main.c -o main -lelf -std=c11
 ./main

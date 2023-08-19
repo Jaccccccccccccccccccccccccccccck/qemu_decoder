@@ -1,8 +1,9 @@
 /*
  * decodeELF function implementation
  */
-#include <array>
-#include <string> 
+// #include <array>
+// #include <string> 
+#include <stdio.h>
 #include <err.h>
 #include <fcntl.h>
 #include <gelf.h>
@@ -12,17 +13,17 @@
 #include <stdlib.h>
 #include <sysexits.h>
 #include <unistd.h>
-#include <bsd/vis.h>
+// #include <bsd/vis.h>
+// #include <vis.h>
 #include <string.h>
-#include <vector> 
+// #include <vector> 
 
-
+u_int32_t* get_all_text_insts_fix32(const char* a, int* size);
 
 /*
 get 32-bits insts from elf .text
 */
-void
-get_all_text_insts_fix32(const char *file_path, std::vector<u_int32_t>& res) {
+u_int32_t* get_all_text_insts_fix32(const char *file_path, int* size) {
     int fd;
     Elf* e;
     char *name, pc[4 * sizeof(char)];
@@ -63,12 +64,20 @@ get_all_text_insts_fix32(const char *file_path, std::vector<u_int32_t>& res) {
         //     printf("is not a executable section \n");
         // }
         n = 0;
+        // printf("%s", name); 
+        // printf("    %d\n", data != NULL);
         if (strcmp(name, ".text") == 0 && data != NULL) {
             p = (u_int32_t *) data->d_buf;
-            while ((((char *)p)<(char*)data -> d_buf + data->d_size)) {
-                res.push_back(*p);
-                p++;
-            }
+            u_int32_t* res = (u_int32_t *)malloc(data->d_size);
+            printf("malloc ptr address: %x\n", res);
+            memcpy(res, data->d_buf, data->d_size);
+            printf("d_size: %d\n", data->d_size / 8);
+            *size = data->d_size / 8;
+            return res;
+            // while ((((char *)p)<(char*)data -> d_buf + data->d_size)) {
+            //     res.push_back(*p);
+            //     p++;
+            // }
         }
     }
 
@@ -81,61 +90,4 @@ get_all_text_insts_fix32(const char *file_path, std::vector<u_int32_t>& res) {
     (void)putchar('\n');
     (void)elf_end(e);
     (void)close(fd);
-}
-
-std::vector<StaticInstPtr>
-Decoder::decode_elf_arm(const char *file_path)
-{
-    std::vector<u_int32_t> insts;
-    std::cout << "get inst from elf file: " << file_path << std::endl;
-    get_all_text_insts_fix32(file_path, insts);
-    std::vector<StaticInstPtr> res(insts.size());
-    for(int i = 0; i < insts.size(); i++) {
-        res[i] = gem5::ArmISA::Decoder::decode_inst(insts[i]);
-    }
-    for (int i = 0; i < 1000 && i < insts.size(); i++) {
-        if(res[i]->isMemRef()) {
-            std::cout << i << " : " << std::hex << insts[i] << " " << res[i]->getName() <<  " is mem " << std::endl;
-        }
-    }
-    return res;
-}
-
-std::vector<MemInfo*>
-Decoder::decode_elf_arm_mem_info(const char *file_path)
-{
-    std::vector<u_int32_t> insts;
-    std::cout << "get inst from elf file: " << file_path << std::endl;
-    get_all_text_insts_fix32(file_path, insts);
-    std::vector<MemInfo*> res(insts.size());
-    for(int i = 0; i < insts.size(); i++) {
-        res[i] = gem5::ArmISA::Decoder::decode_mem(insts[i]);
-    }
-    for (int i = 0; i < 1000 && i < insts.size(); i++) {
-        if(res[i]->isMem) {
-            std::cout << i << " : " << std::hex << insts[i] << " " <<  " is mem " << std::endl;
-        }
-    }
-    return res;
-}
-
-void
-Decoder::compare_decode_mem_info(const char *file_path)
-{
-    std::vector<u_int32_t> insts;
-    std::cout << "get inst from elf file: " << file_path << std::endl;
-    get_all_text_insts_fix32(file_path, insts);
-    std::vector<MemInfo*> res_mem_info(insts.size());
-    std::vector<StaticInstPtr> res_inst(insts.size());
-    for(int i = 0; i < insts.size(); i++) {
-        res_mem_info[i] = gem5::ArmISA::Decoder::decode_mem(insts[i]);
-        res_inst[i] = gem5::ArmISA::Decoder::decode_inst(insts[i]);
-    }
-    for (int i = 0; i < 1000 && i < insts.size(); i++) {
-        if(res_mem_info[i]->isMem != res_inst[i]->isMemRef()) {
-            std::cout << i << " : " << std::hex << insts[i] << " inst " << res_inst[i]->getName() <<  ", mem info is_mem: " << res_mem_info[i]->isMem <<
-            ", inst info is_mem:" << res_inst[i]->isMemRef() << std::endl;
-            std::cout << res_inst[i]->isMacroop() << std::endl;
-        }
-    }
 }

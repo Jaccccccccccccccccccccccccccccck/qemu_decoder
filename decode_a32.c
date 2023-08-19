@@ -81,8 +81,8 @@ static inline int rsub_8(int x)
     return 8 - x;
 }
 
-#include "decode-a32.c.inc"
-#include "decode-a32-uncond.c.inc"
+#include "generated/decode-a32.c.inc"
+#include "generated/decode-a32-uncond.c.inc"
 
 
 
