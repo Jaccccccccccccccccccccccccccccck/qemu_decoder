@@ -404,7 +404,7 @@ class Pattern(General):
 
         # output(ind, 'if (', translate_prefix, '_', self.name,
         #        '( &u.f_', arg, ')) return true;\n')
-        output(ind, 'printf("%s", &u.f_', arg, '.opcode);\n')
+        # output(ind, 'printf("%s", &u.f_', arg, '.opcode);\n')
 
     # Normal patterns do not have children.
     def build_tree(self):

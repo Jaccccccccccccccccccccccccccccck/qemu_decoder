@@ -4,6 +4,7 @@
         "stdint.h": "c",
         "bitops.h": "c",
         "*.inc": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "string.h": "c"
     }
 }
