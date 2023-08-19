@@ -7,6 +7,7 @@
         "stdio.h": "c",
         "string.h": "c",
         "unistd.h": "c",
-        "libelf.h": "c"
+        "libelf.h": "c",
+        "capstone.h": "c"
     }
 }

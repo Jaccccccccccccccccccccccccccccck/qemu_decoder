@@ -71,8 +71,8 @@ u_int32_t* get_all_text_insts_fix32(const char *file_path, int* size) {
             u_int32_t* res = (u_int32_t *)malloc(data->d_size);
             printf("malloc ptr address: %x\n", res);
             memcpy(res, data->d_buf, data->d_size);
-            printf("d_size: %d\n", data->d_size / 8);
-            *size = data->d_size / 8;
+            printf("d_size: %d\n", data->d_size / 4);
+            *size = data->d_size / 4;
             return res;
             // while ((((char *)p)<(char*)data -> d_buf + data->d_size)) {
             //     res.push_back(*p);

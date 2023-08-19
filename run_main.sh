@@ -1,2 +1,2 @@
-gcc main.c -o main -lelf -std=c11
+gcc main.c -o main -lelf -lcapstone -std=c11
 ./main
