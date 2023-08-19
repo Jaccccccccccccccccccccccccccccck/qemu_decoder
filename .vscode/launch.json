@@ -8,10 +8,10 @@
             "name": "Python: 当前文件",
             "type": "python",
             "request": "launch",
-            "program": "/usr/bin/python3",
+            "program": "/usr/local/bin/python3.9",
             // "args": ["./decodetree.py", "./a32.decode"],
             "args": ["./fix_decodetree.py", "./a32.decode", "--static-decode=disas_a32", "-o", "./decode-a32.c.inc"],
-            "cwd": "${cwd}",
+            "cwd": "/Users/Jack/Projects/qemu_capstone_speed_test",
             "console": "integratedTerminal",
             "justMyCode": true
         }

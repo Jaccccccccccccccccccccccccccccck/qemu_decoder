@@ -5,7 +5,8 @@
 int main() {
     // uint32_t inst = 0xE3A0F101; 
     // disas_arm_insn(inst);
-    uint32_t inst2 = 0xE0412003; 
+    uint32_t inst2 = 0xE3A0F101; 
+    inst2 = 0xE1510002;
     disas_arm_insn(inst2);
     printf("\n");
     printf("done!\n");

@@ -372,7 +372,7 @@ class Format(General):
     def output_extract(self):
         output('static void ', self.extract_name(), '(',
                self.base.struct_name(), ' *a, ', insntype, ' insn)\n{\n')
-        output('    strcpy(a->opcode, "', self.opcode, '");\n')
+        # output('    strcpy(a->opcode, "', self.opcode, '");\n')
         for n, f in self.fields.items():
             output('    a->', n, ' = ', f.str_extract(), ';\n')
         output('}\n\n')
@@ -400,6 +400,8 @@ class Pattern(General):
                    '( &u.f_', arg, ', insn);\n')
         for n, f in self.fields.items():
             output(ind, 'u.f_', arg, '.', n, ' = ', f.str_extract(), ';\n')
+        output(ind, 'strcpy(&u.f_', arg , '.opcode, "', self.opcode, '");\n')
+
         # output(ind, 'if (', translate_prefix, '_', self.name,
         #        '( &u.f_', arg, ')) return true;\n')
         output(ind, 'printf("%s", &u.f_', arg, '.opcode);\n')
@@ -955,6 +957,7 @@ def parse_generic(lineno, parent_pat, name, toks):
             arg = infer_argument_set(flds)
         if name in formats:
             error(lineno, 'duplicate format name', name)
+        print("format: ", name)
         fmt = Format(name, lineno, arg, fixedbits, fixedmask,
                      undefmask, fieldmask, flds, width, name)
         formats[name] = fmt
@@ -983,8 +986,9 @@ def parse_generic(lineno, parent_pat, name, toks):
         for f in arg.fields:
             if f not in flds.keys() and f not in fmt.fields.keys():
                 error(lineno, f'field {f} not initialized')
+        # print("pattern: ", name)
         pat = Pattern(name, lineno, fmt, fixedbits, fixedmask,
-                      undefmask, fieldmask, flds, width, name)
+                      undefmask, fieldmask, flds, width, opcode=name)
         parent_pat.pats.append(pat)
         allpatterns.append(pat)
 
