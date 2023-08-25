@@ -397,10 +397,13 @@ class Pattern(General):
         output(ind, '/* ', self.file, ':', str(self.lineno), ' */\n')
         if not extracted:
             output(ind, self.base.extract_name(),
-                   '( &u.f_', arg, ', insn);\n')
+                '( (arg_', arg, '*)u', ', insn);\n')
+                #    '( &u.f_', arg, ', insn);\n')
         for n, f in self.fields.items():
-            output(ind, 'u.f_', arg, '.', n, ' = ', f.str_extract(), ';\n')
-        output(ind, 'strcpy((char *)&(u.f_', arg , '.opcode), "', self.opcode, '");\n')
+            output(ind, 'u->f_', arg, '.', n, ' = ', f.str_extract(), ';\n')
+            # output(ind, 'u', ' = ', f.str_extract(), ';\n')
+        # output(ind, 'strcpy((char *)&(u.f_', arg , '.opcode), "', self.opcode, '");\n')
+        output(ind, 'strcpy((char *)(u), "', self.opcode, '");\n')
 
         # output(ind, 'if (', translate_prefix, '_', self.name,
         #        '( &u.f_', arg, ')) return true;\n')
@@ -545,7 +548,8 @@ class Tree:
         # extract the fields now.
         if not extracted and self.base:
             output(ind, self.base.extract_name(),
-                   '( &u.f_', self.base.base.name, ', insn);\n')
+                #    '( &u.f_', self.base.base.name, ', insn);\n')
+                   '( (arg_', self.base.base.name,'*)u', ', insn);\n')
             extracted = True
 
         # Attempt to aid the compiler in producing compact switch statements.
@@ -1405,20 +1409,24 @@ def main():
         f = formats[n]
         f.output_extract()
 
-    output(decode_scope, 'bool ', decode_function,
+    output("", 'union u_info_t {\n')
+    for n in sorted(arguments.keys()):
+        f = arguments[n]
+        output("    ", "", f.struct_name(), ' f_', f.name, ';\n')
+    output("", '};\n')
+    output("", 'typedef union u_info_t u_info;\n\n')
+
+
+    output(decode_scope, 'u_info* ', decode_function,
            '(', insntype, ' insn)\n{\n')
 
     i4 = str_indent(4)
 
     if len(allpatterns) != 0:
-        output(i4, 'union {\n')
-        for n in sorted(arguments.keys()):
-            f = arguments[n]
-            output(i4, i4, f.struct_name(), ' f_', f.name, ';\n')
-        output(i4, '} u;\n\n')
+        output(i4, "u_info *u = (u_info*)malloc(sizeof(u_info));\n\n")
         toppat.output_code(4, False, 0, 0)
 
-    output(i4, 'return false;\n')
+    output(i4, 'return u;\n')
     output('}\n')
 
     if variablewidth:

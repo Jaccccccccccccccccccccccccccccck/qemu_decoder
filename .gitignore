@@ -1,1 +1,4 @@
 *.inc
+*.tar
+spec_2006_arm
+main
