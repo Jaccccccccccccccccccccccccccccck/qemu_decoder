@@ -25,15 +25,19 @@ decode_inst()
 ├── common
 │   └── elf_parser      // 解析elf文件的工具
 ├── generated           // 存放生成的代码位置
-│   ├── decode-a32.c.inc
-│   └── decode-a32-uncond.c.inc
+│   ├── decode-a32.inc
+│   └── decode-a32-uncond.inc
 ├── isa                 // 存放指令解析描述
 │   ├── arm             // arm指令解析描述
-│   │   ├── a32.decode
-│   │   └── a32-uncond.decode
+│   │   ├── a32.isa
+│   │   └── a32-uncond.isa
 │   └── riscv           // riscv指令解析描述
+│       ├── riscv16.isa
+│       └── riscv32.isa
 ├── isa_parser          // isa parser
-│   └── decodetree.py
+│   └── gen_decoder.py
+├── include          // 使用本项目需要引入的头文件
+│   └── tiger_decoder.h
 ├── readme.md
 ├── isa_parser          // 一些脚本
 │   │── run_isa.sh
@@ -41,11 +45,9 @@ decode_inst()
 ├── spec_2006_arm       // spec 2006 文件
 ├── SPEC2006_ARM.tar
 ├── test                // 一些测试文件
-│   ├── hello.arm
-│   ├── hello.arm.dis
 │   ├── run_spec.c
 │   └── main.c
-└── wrapper             // 指令解析器wrapper
+└── wrapper             // 指令解析器wrapper，包含预处理器
     ├── decode_arm.c
     └── decode_riscv.c
 ```
