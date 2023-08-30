@@ -2,8 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "../generated/decode-a32-1.inc"
-#include "../generated/decode-a32-2.inc"
+
 
 #define true 1
 #define false 0
@@ -85,6 +84,8 @@ static inline int rsub_8(int x)
     return 8 - x;
 }
 
+#include "../generated/decode-a32-1.inc"
+#include "../generated/decode-a32-2.inc"
 
 static u_info* decode_inst(unsigned int insn)
 {
