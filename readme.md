@@ -28,8 +28,8 @@ decode_inst()
 ├── common
 │   └── elf_parser      // 解析elf文件的工具
 ├── generated           // 存放生成的代码位置
-│   ├── decode-a32.inc
-│   └── decode-a32-uncond.inc
+│   ├── decode-arm-1.inc
+│   └── decode-arm-2.inc
 ├── isa                 // 存放指令解析描述
 │   ├── arm             // arm指令解析描述
 │   │   ├── a32.isa
