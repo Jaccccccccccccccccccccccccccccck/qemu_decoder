@@ -85,7 +85,7 @@ static inline int rsub_8(int x)
 }
 
 #include "../generated/decode-a32-1.inc"
-#include "../generated/decode-a32-2.inc"
+// #include "../generated/decode-a32-2.inc"
 
 static u_info* decode_inst(unsigned int insn)
 {
