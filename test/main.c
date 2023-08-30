@@ -2,9 +2,8 @@
 #include <ctype.h>
 #include <stdint.h>
 #include <string.h>
-#include "decode_a32.c"
-#include "elf_parser/elf_parser.c"
-/*capstone centos 安装 yum isntall capstone; yum install capstone-devel*/
+#include "wrapper/decode_arm.c"
+#include "common/elf_parser/elf_parser.c"
 #include <capstone/capstone.h>
 
 int test_capstone(u_int32_t* code, int size) {
@@ -85,7 +84,6 @@ void pirnt_diff(char* str1, char* str2) {
 void test_get_elf_instruction() {
     u_int32_t* res = NULL;
     int size;
-    // 不知道为什么第一次取不出来值，第二次才能取出来
     res = get_all_text_insts_fix32("./spec_2006_arm/400.perlbench/exe/perlbench_base.arm-static", &size);
     printf("====\n");
 
@@ -93,7 +91,7 @@ void test_get_elf_instruction() {
     if(size) {
         for(int i = 0; i < size; i++) {
             
-            u_info* u = disas_arm_insn(*res);
+            u_info* u = decode_inst(*res);
             toLowerCase(u->f_empty.opcode);
             // printf("%s  ", processString(u->f_empty.opcode));
             char* opcode1 = processString(u->f_empty.opcode);
@@ -115,14 +113,50 @@ void test_get_elf_instruction() {
     printf("total: %d, equal: %d, not_equal: %d\n", size, equal_count, not_equal_count);
 }
 
+// 1. **MOV 指令（数据传输）：**
+//    - 指令：`MOV R0, #10`
+//    - 编码：`E3A0000A`
+
+// 2. **ADD 指令（算术操作）：**
+//    - 指令：`ADD R1, R2, R3`
+//    - 编码：`E0801003`
+
+// 3. **SUB 指令（算术操作）：**
+//    - 指令：`SUB R4, R4, #1`
+//    - 编码：`E2444001`
+
+// 4. **LDR 指令（加载数据）：**
+//    - 指令：`LDR R5, [R6, #4]`
+//    - 编码：`E5965004`
+
+// 5. **STR 指令（存储数据）：**
+//    - 指令：`STR R7, [R8, #-8]`
+//    - 编码：`E7887008`
+
+// 6. **CMP 指令（比较操作）：**
+//    - 指令：`CMP R9, #0`
+//    - 编码：`E3590000`
+
+// 7. **B 指令（分支）：**
+//    - 指令：`B label`
+//    - 编码：`EAFF0010`（假设 `label` 地址是 `0x0010`）
+
+// 8. **BL 指令（分支并链接，用于函数调用）：**
+//    - 指令：`BL function_address`
+//    - 编码：`EB000020`（假设 `function_address` 地址是 `0x0020`）
+
+// 9. **AND 指令（逻辑操作）：**
+//    - 指令：`AND R10, R11, R12`
+//    - 编码：`E001100C`
+
+// 10. **ORR 指令（逻辑操作）：**
+//     - 指令：`ORR R13, R13, #0xFF`
+//     - 编码：`E38D0FFF`
+
 int main() {
-    test_get_elf_instruction();
-    // uint32_t inst = 0xE3A0F101; 
-    // disas_arm_insn(inst);
-    uint32_t inst2 = 0xE3A0F101; 
-    inst2 = 0xeaffffe0;
-    disas_arm_insn(inst2);
-    printf("\n");
-    printf("done!\n");
+    // test_get_elf_instruction();
+    uint32_t inst = 0xE0801003; 
+    u_info* u  = decode_inst(inst);
+    printf("%x : %s\n", inst, processString(u->f_empty.opcode));
     return 1;
 }

@@ -52,3 +52,15 @@ decode_inst()
     └── decode_riscv.c
 ```
 
+## capstone安装
+capstone centos 安装 
+```
+yum isntall capstone;
+yum install capstone-devel
+```
+
+
+使用过程
+```
+#include <capstone/capstone.h>
+```

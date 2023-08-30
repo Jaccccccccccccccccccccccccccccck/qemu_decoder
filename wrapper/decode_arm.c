@@ -83,33 +83,9 @@ static inline int rsub_8(int x)
     return 8 - x;
 }
 
-#include "generated/decode-a32.c.inc"
-// #include "generated/decode-a32-uncond.c.inc"
+#include "../generated/decode-a32.c.inc"
 
-
-
-static u_info* disas_arm_insn(unsigned int insn)
+static u_info* decode_inst(unsigned int insn)
 {
-    unsigned int cond = insn >> 28;
-
-    /* M variants do not implement ARM mode; this must raise the INVSTATE
-     * UsageFault exception.
-     */
-    // if (cond == 0xf) {
-    //     /* In ARMv3 and v4 the NV condition is UNPREDICTABLE; we
-    //      * choose to UNDEF. In ARMv5 and above the space is used
-    //      * for miscellaneous unconditional instructions.
-    //      */
-
-    //     /* Unconditional instructions.  */
-    //     /* TODO: Perhaps merge these into one decodetree output file.  */
-    //     return disas_a32_uncond(insn);
-    //     /* fall back to legacy decoder */
-
-
-    //     // goto illegal_op;
-    // }
-    /* TODO: Perhaps merge these into one decodetree output file.  */
     return disas_a32(insn);
-   
 }
