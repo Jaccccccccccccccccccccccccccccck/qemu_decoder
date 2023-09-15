@@ -1,4 +1,4 @@
-
+# 结构定义
 &empty
 &rr             ra rb
 &ri             imm rb
@@ -8,16 +8,18 @@
 &dest8          dest
 &r              ra
 
-@empty          .... .... .... ....   &empty
+# 操作数定义
+@empty          .... .... .... ....     &empty
 @rr_mov         .... ra:4 rb:4 ....     &rr
-@ir_mov         .... imm:8     rb:4    &ri
-@str_ldr        .... addr:8     rb:4    &rm
-@op_rr          .... fn:4 ra:4 rb:4   &op_rr
-@jxx            .... fn:4 dest8:8   &jxx
-@cmov           .... fn:4 ra:4 rb:4   &op_rr
+@ir_mov         .... imm:8     rb:4     &ri
+@str_ldr        .... addr:8    rb:4     &rm
+@op_rr          .... fn:4 ra:4 rb:4     &op_rr
+@jxx            .... fn:4 dest8:8       &jxx
+@cmov           .... fn:4 ra:4 rb:4     &op_rr
 @dest8          .... dest:8 ....        &dest8
-@push_pop       .... ra:4 .... ....        &ra
+@push_pop       .... ra:4 .... ....     &r
     
+# 指令定义
 
 halt            0000 ---- ---- ----     @empty
 nop             0001 ---- ---- ----     @empty
