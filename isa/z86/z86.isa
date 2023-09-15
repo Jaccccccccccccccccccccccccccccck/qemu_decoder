@@ -1,0 +1,34 @@
+
+&empty
+&rr             ra rb
+&ri             imm rb
+&rm             addr rb
+&op_rr          fn ra rb
+&jxx            fn dest8
+&dest8          dest
+&r              ra
+
+@empty          .... .... .... ....   &empty
+@rr_mov         .... ra:4 rb:4 ....     &rr
+@ir_mov         .... imm:8     rb:4    &ri
+@str_ldr        .... addr:8     rb:4    &rm
+@op_rr          .... fn:4 ra:4 rb:4   &op_rr
+@jxx            .... fn:4 dest8:8   &jxx
+@cmov           .... fn:4 ra:4 rb:4   &op_rr
+@dest8          .... dest:8 ....        &dest8
+@push_pop       .... ra:4 .... ....        &ra
+    
+
+halt            0000 ---- ---- ----     @empty
+nop             0001 ---- ---- ----     @empty
+rrmov           0010 .... .... ----     @rr_mov
+irmov           0011 .... .... ....     @ir_mov
+str             0100 .... .... ....     @str_ldr
+ldr             0101 .... .... ....     @str_ldr
+op              0110 .... .... ....     @op_rr
+jxx             0111 .... .... ....     @jxx
+cmov            1000 .... .... ....     @cmov
+call            1001 .... .... ----     @dest8
+ret             1010 ---- ---- ----     @empty
+push            1011 .... ---- ----     @push_pop
+pop             1100 .... ---- ----     @push_pop
