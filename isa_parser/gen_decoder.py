@@ -387,8 +387,8 @@ class Pattern(General):
         global translate_prefix
         output('typedef ', self.base.base.struct_name(),
                ' arg_', self.name, ';\n')
-        output(translate_scope, 'bool ', translate_prefix, '_', self.name,
-               '(arg_', self.name, ' *a);\n')
+        # output(translate_scope, 'bool ', translate_prefix, '_', self.name,
+        #        '(arg_', self.name, ' *a);\n')
 
     def output_code(self, i, extracted, outerbits, outermask):
         global translate_prefix
