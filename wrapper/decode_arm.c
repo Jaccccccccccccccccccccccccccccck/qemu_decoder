@@ -84,10 +84,12 @@ static inline int rsub_8(int x)
     return 8 - x;
 }
 
-#include "../generated/decode-a32-1.inc"
-// #include "../generated/decode-a32-2.inc"
 
-static u_info* decode_inst(unsigned int insn)
+#include "../include/inst_info.h"
+#include "../generated/decode-a32-uncond.c.inc"
+#include "../generated/decode-a32.c.inc"
+
+static inst_info* decode_inst(unsigned int insn)
 {
-    return disas_a32(insn);
+    return disas_a32_uncond(insn);
 }

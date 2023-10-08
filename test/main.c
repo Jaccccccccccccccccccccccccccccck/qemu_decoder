@@ -91,10 +91,10 @@ void test_get_elf_instruction() {
     if(size) {
         for(int i = 0; i < size; i++) {
             
-            u_info* u = decode_inst(*res);
-            toLowerCase(u->f_empty.opcode);
+            inst_info* u = decode_inst(*res);
+            toLowerCase(u->mnemonic);
             // printf("%s  ", processString(u->f_empty.opcode));
-            char* opcode1 = processString(u->f_empty.opcode);
+            char* opcode1 = processString(u->mnemonic);
             
             char opcode2[30];
             capstone_get_opcode_one_inst(res, opcode2);
@@ -123,35 +123,42 @@ void test_capstone_arm_thumb() {
     test_capstone(res, size);
 }
 
-// 1. **MOV 指令（数据传输）：** - 指令：`MOV R0, #10` - 编码：`E3A0000A`
-// 2. **ADD 指令（算术操作）：** - 指令：`ADD R1, R2, R3` - 编码：`E0801003`
-// 3. **SUB 指令（算术操作）：** - 指令：`SUB R4, R4, #1` - 编码：`E2444001`
-// 4. **LDR 指令（加载数据）：** - 指令：`LDR R5, [R6, #4]` - 编码：`E5965004`
-// 5. **STR 指令（存储数据）：** - 指令：`STR R7, [R8, #-8]` - 编码：`E7887008`
-// 6. **CMP 指令（比较操作）：** - 指令：`CMP R9, #0` - 编码：`E3590000`
-// 7. **B 指令（分支）：     ** - 指令：`B label` - 编码：`EAFF0010`
-// 8. **BL 指令（分支并链接，用于函数调用）：** - 指令：`BL function_address`  - 编码：`EB000020`
-// 9. **AND 指令（逻辑操作）：** - 指令：`AND R10, R11, R12` - 编码：`E001100C`
-// 10. **ORR 指令（逻辑操作）：** - 指令：`ORR R13, R13, #0xFF` - 编码：`E38D0FFF`
+
+
+void test_generated_decocer() {
+    // 1. **MOV 指令（数据传输）：** - 指令：`MOV R0, #10` - 编码：`E3A0000A`
+    // 2. **ADD 指令（算术操作）：** - 指令：`ADD R1, R2, R3` - 编码：`E0801003`
+    // 3. **SUB 指令（算术操作）：** - 指令：`SUB R4, R4, #1` - 编码：`E2444001`
+    // 4. **LDR 指令（加载数据）：** - 指令：`LDR R5, [R6, #4]` - 编码：`E5965004`
+    // 5. **STR 指令（存储数据）：** - 指令：`STR R7, [R8, #-8]` - 编码：`E7887008`
+    // 6. **CMP 指令（比较操作）：** - 指令：`CMP R9, #0` - 编码：`E3590000`
+    // 7. **B 指令（分支）：     ** - 指令：`B label` - 编码：`EAFF0010`
+    // 8. **BL 指令（分支并链接，用于函数调用）：** - 指令：`BL function_address`  - 编码：`EB000020`
+    // 9. **AND 指令（逻辑操作）：** - 指令：`AND R10, R11, R12` - 编码：`E001100C`
+    // 10. **ORR 指令（逻辑操作）：** - 指令：`ORR R13, R13, #0xFF` - 编码：`E38D0FFF`
+    // 测试ARM的指令
+    uint32_t insts[10];
+    insts[0] = 0xE3A0000A; // MOV 指令（数据传输）
+    insts[1] = 0xE0801003; // ADD 指令（算术操作）
+    insts[2] = 0xE2444001; // SUB 指令（算术操作）
+    insts[3] = 0xE5965004; // LDR 指令（加载数据）
+    insts[4] = 0xE7887008; // STR 指令（存储数据）
+    insts[5] = 0xE3590000; // CMP 指令（比较操作）
+    insts[6] = 0xEAFF0010; // B 指令（分支）
+    insts[7] = 0xEB000020; // BL 指令（分支并链接，用于函数调用）
+    insts[8] = 0xE001100C; // AND 指令（逻辑操作）
+    insts[9] = 0xE38D0FFF; // ORR 指令（逻辑操作）
+    for(int i = 0; i < 10; i++) {
+        inst_info* u  = decode_inst(insts[i]);
+        // printf("%x : %s\n", insts[i], processString(u->mnemonic));
+        printf("%x : %s\n", insts[i], u->mnemonic);
+    }
+}
+
 
 int main() {
     // test_get_elf_instruction();
-    test_capstone_arm_thumb();
-    // 测试ARM的指令
-    // uint32_t insts[10];
-    // insts[0] = 0xE3A0000A; // MOV 指令（数据传输）
-    // insts[1] = 0xE0801003; // ADD 指令（算术操作）
-    // insts[2] = 0xE2444001; // SUB 指令（算术操作）
-    // insts[3] = 0xE5965004; // LDR 指令（加载数据）
-    // insts[4] = 0xE7887008; // STR 指令（存储数据）
-    // insts[5] = 0xE3590000; // CMP 指令（比较操作）
-    // insts[6] = 0xEAFF0010; // B 指令（分支）
-    // insts[7] = 0xEB000020; // BL 指令（分支并链接，用于函数调用）
-    // insts[8] = 0xE001100C; // AND 指令（逻辑操作）
-    // insts[9] = 0xE38D0FFF; // ORR 指令（逻辑操作）
-    // for(int i = 0; i < 10; i++) {
-    //     u_info* u  = decode_inst(insts[i]);
-    //     printf("%x : %s\n", insts[i], processString(u->f_empty.opcode));
-    // }
-    // return 1;
+    // test_capstone_arm_thumb();
+    test_generated_decocer();
+    return 0;
 }

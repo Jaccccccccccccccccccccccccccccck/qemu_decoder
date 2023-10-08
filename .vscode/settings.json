@@ -8,6 +8,13 @@
         "string.h": "c",
         "unistd.h": "c",
         "libelf.h": "c",
-        "capstone.h": "c"
+        "capstone.h": "c",
+        "typeinfo": "c",
+        "functional": "c",
+        "array": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "inst_info.h": "c"
     }
 }
